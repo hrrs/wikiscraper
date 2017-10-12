@@ -1,7 +1,7 @@
 ###text_mining.py
 import requests
 bad_links = ["/wiki/Help","/wiki/File","/wiki/Wiki"]
-
+links = {}
 def find_start(text,start):
 	'''
 	Finds the start of the body and index 'start' of the wikipedia page represented by 'text'
@@ -34,7 +34,7 @@ def find_link(text,start):
 
 def crawl(page,depth,width):
 
-	links = {}
+	
 	links_list = []
 
 	text = analyze_page(page)
@@ -54,4 +54,20 @@ def crawl(page,depth,width):
 
 	print(links_list)
 
-crawl('https://en.wikipedia.org/wiki/Turkish_language', 10, 1)
+def crawl2(page,depth):
+	next_start = 0
+	if page in links:
+		print('"'+page+'" was in links')
+		return page
+	else:
+		links[page] = 1
+	if depth <= 1:
+		print('maximum depth reached')
+		return page
+	text = analyze_page('https://en.wikipedia.org'+page)
+	links_list = []
+	next_link, next_start = find_link(text,find_start(text,next_start))
+	return(page + " " + crawl2(next_link,depth-1))
+
+#crawl('https://en.wikipedia.org/wiki/Turkish_language', 10, 1)
+print(crawl2('/wiki/Turkish_language', 50))
